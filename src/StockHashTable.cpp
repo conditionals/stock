@@ -1,6 +1,7 @@
 #include "../include/StockHashTable.h"
 #include <iomanip>
 #include <iostream>
+#include <vector>
 
 StockHashTable::StockHashTable(size_t init_size): table_size(init_size), num_elements(0) {
     table.resize(table_size);
@@ -98,6 +99,17 @@ void StockHashTable::printStats() {
     std::cout << "Size: " << table_size << std::endl;
     std::cout << "Elements: " << num_elements << std::endl;
     std::cout << "Load Factor: " << std::fixed << std::setprecision(2) << get_load_factor() << std::endl;
+}
+std::vector<StockInfo*> StockHashTable::get_all() const {
+	std::vector<StockInfo*> results;
+
+	for (const auto& node : table) {
+		if (node.is_occupied && !node.is_deleted) {
+			results.push_back(node.stock_data);
+		}
+	}
+
+	return results;
 }
 
 
