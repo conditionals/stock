@@ -32,7 +32,6 @@ class StockHashTable {
 	double get_load_factor() const;
 	void printStats();
 
-	std::vector<StockInfo *> get_all() const;
 	StockInfo** get_all_array() const;
 	int size() const;
 

@@ -97,17 +97,6 @@ void StockHashTable::printStats() {
     std::cout << "Load Factor: " << std::fixed << std::setprecision(2) << get_load_factor() << std::endl;
 }
 
-std::vector<StockInfo *> StockHashTable::get_all() const {
-    std::vector<StockInfo *> results;
-
-    for (const auto &node: table) {
-        if (node.is_occupied && !node.is_deleted) {
-            results.push_back(node.stock_data);
-        }
-    }
-
-    return results;
-}
 
 StockInfo** StockHashTable::get_all_array() const {
     StockInfo** arr = new StockInfo* [num_elements];

@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void heapify(StockInfo** arr, int n, int i) {
+void heapify(StockInfo **arr, int n, int i) {
     //recursively builds onto heap
     int largest = i;
     int l = 2 * i + 1;
@@ -19,14 +19,14 @@ void heapify(StockInfo** arr, int n, int i) {
         largest = r;
 
     if (largest != i) {
-        StockInfo* temp = arr[i];
+        StockInfo *temp = arr[i];
         arr[i] = arr[largest];
         arr[largest] = temp;
         heapify(arr, n, largest); // recursive call
     }
 }
 
-vector<StockInfo*> StockAnalysisCLI::heap_sort_by_avg_return() const {
+vector<StockInfo *> StockAnalysisCLI::heap_sort_by_avg_return() const {
     StockInfo **arr = hash_lookup.get_all_array();
     int size = hash_lookup.size();
 
@@ -45,7 +45,7 @@ vector<StockInfo*> StockAnalysisCLI::heap_sort_by_avg_return() const {
 
 
     // Convert sorted array into a vector in ascending order, lowest to highest
-    vector<StockInfo*> sorted_list;
+    vector<StockInfo *> sorted_list;
     for (int i = 0; i < size; ++i) {
         sorted_list.push_back(arr[i]);
     }
@@ -53,6 +53,6 @@ vector<StockInfo*> StockAnalysisCLI::heap_sort_by_avg_return() const {
     //reverse(sorted_list.begin(), sorted_list.end()); //if wanting descending order then just uncomment
 
 
-    delete[] arr;  // clean up
+    delete[] arr; // clean up
     return sorted_list;
 }
