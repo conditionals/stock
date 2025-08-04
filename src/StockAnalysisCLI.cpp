@@ -111,7 +111,7 @@ void StockAnalysisCLI::create_sample_data() {
 }
 
 void StockAnalysisCLI::heap_sort_by_avg_return() {
-	std::vector<StockInfo*> all_stocks = hash_lookup.get_all(); // you must implement this if not present
+	std::vector<StockInfo*> all_stocks = hash_lookup.get_all();
 
 	auto cmp = [](StockInfo* a, StockInfo* b) {
 		return a->avg_annual_return < b->avg_annual_return; // max-heap: higher return comes first
