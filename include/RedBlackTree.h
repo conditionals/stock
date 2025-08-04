@@ -57,7 +57,6 @@ private:
 	helpClear(node->left);
 	helpClear(node->right);
 
-	delete node->data;
 	delete node;
   }
 

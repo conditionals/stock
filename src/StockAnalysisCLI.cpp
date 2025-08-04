@@ -1,5 +1,7 @@
 #include "../include/StockAnalysisCLI.h"
 #include "../include/HeapSort.h" // this file is needed. do not remove
+#include "../include/QuickSort.h"
+#include <chrono>
 #include <ctime>
 #include <iomanip>
 #include <iostream>
@@ -23,7 +25,7 @@ StockAnalysisCLI::~StockAnalysisCLI() {
 void StockAnalysisCLI::display_menu() {
     std::cout << "Project 3: Stock Analysis\n";
     std::cout << "1. Generate Stock Data\n";
-    std::cout << "2. Compare Algorithms\n";
+    std::cout << "2. Compare Algorithms (Heap Sort vs Quicksort)\n";
     std::cout << "3. Search Stock by Ticker\n";
     std::cout << "4. Display Best/Worst Performers\n";
     std::cout << "5. Search Tickers by Prefix\n";
@@ -32,6 +34,12 @@ void StockAnalysisCLI::display_menu() {
 
     std::cout << "Choice: ";
     
+}
+
+std::vector<StockInfo*> StockAnalysisCLI::heap_sort_by_avg_return() const {
+    std::vector<StockInfo*> arr = stock_database;
+    heapSort(arr);
+    return arr;
 }
 
 // use unordered set to ensure we dont generate same ticker more than once
@@ -63,7 +71,7 @@ std::string format_date(std::tm date) {
 }
 
 void StockAnalysisCLI::create_sample_data() {
-    std::vector<std::string> symbols = generate_tickers(200);
+    std::vector<std::string> symbols = generate_tickers(1000);
     // possible +/- 10% + noise
     std::uniform_real_distribution<> pcnt_change_dist(-0.1,0.1);
     std::uniform_real_distribution<> noise_dist(-0.03,0.03);
@@ -127,6 +135,7 @@ void StockAnalysisCLI::create_sample_data() {
 	info->volatility = std::sqrt(ssd / info->trading_days);
 	hash_lookup.insert(info->symbol, info);
 	rb_tree->insert(info);
+	stock_database.push_back(info);
 
     }
 }
@@ -151,17 +160,41 @@ void StockAnalysisCLI::run() {
 		break;
 	    // compare algorithms (delta t)
 	    case 2: {
+		if(stock_database.empty()) {
+		    std::cout << REDCOLOR << "Error. You must generate data before you continue.\n" << RESET;
+		    break;
+		}
+	    
+		auto start = std::chrono::high_resolution_clock::now();
 		std::vector<StockInfo*> hs = heap_sort_by_avg_return();
-		StockInfo* top = hs.at(hs.size()-1);
+		auto end = std::chrono::high_resolution_clock::now();
+
+		auto heap_time = std::chrono::duration_cast<std::chrono::microseconds>(end-start).count();
+
+		std::vector<StockInfo*> quickData = stock_database;
+
+		start = std::chrono::high_resolution_clock::now();
+		quickSort(quickData);
+		end = std::chrono::high_resolution_clock::now();
+
+
+		auto quick_time = std::chrono::duration_cast<std::chrono::microseconds>(end-start).count();
+		
+
+		StockInfo* top = quickData.back();
 		std::cout << "Top Performer: " << top->symbol << std::endl;
 		std::cout << "Avg. Annual Return: " << top->avg_annual_return << std::endl;
 		std::cout << "Volatility: " << top->volatility << "\n" << std::endl;
 
-
-		top = hs.at(0);
+		// lowest performer, easier to paste code and just reassign top tho 
+		top = quickData.front();
 		std::cout << "Bottom Performer: " << top->symbol << std::endl;
 		std::cout << "Avg. Annual Return: " << top->avg_annual_return << std::endl;
 		std::cout << "Volatility: " << top->volatility << "\n" << std::endl;
+
+		std::cout << "Heap Sort time: " << heap_time << std::endl;
+		std::cout << "QuickSort time: " << quick_time << std::endl;
+		std::cout << std::endl;
 
 		break;
 	    }

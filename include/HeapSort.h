@@ -4,9 +4,8 @@
 #include <vector>
 #include <algorithm> //used for "reverse" function
 
-using namespace std;
 
-void heapify(StockInfo **arr, int n, int i) {
+void heapify(std::vector<StockInfo*>& arr, int n, int i) {
     //recursively builds onto heap
     int largest = i;
     int l = 2 * i + 1;
@@ -19,40 +18,20 @@ void heapify(StockInfo **arr, int n, int i) {
         largest = r;
 
     if (largest != i) {
-        StockInfo *temp = arr[i];
-        arr[i] = arr[largest];
-        arr[largest] = temp;
+	std::swap(arr[i], arr[largest]);
         heapify(arr, n, largest); // recursive call
     }
 }
 
-vector<StockInfo *> StockAnalysisCLI::heap_sort_by_avg_return() const {
-    StockInfo **arr = hash_lookup.get_all_array();
-    int size = hash_lookup.size();
+void heapSort(std::vector<StockInfo*>& arr) {
+    int n = arr.size();
 
-
-    for (int i = size / 2 - 1; i >= 0; --i) // Builds max-heap using heapify function
-        heapify(arr, size, i);
-
-
-    for (int i = size - 1; i > 0; --i) {
-        // puts elements into array
-        StockInfo *temp = arr[0];
-        arr[0] = arr[i];
-        arr[i] = temp;
-        heapify(arr, i, 0);
+    for(int i = n/2 - 1; i >= 0; i--){
+	heapify(arr, n, i);
     }
 
-
-    // Convert sorted array into a vector in ascending order, lowest to highest
-    vector<StockInfo *> sorted_list;
-    for (int i = 0; i < size; ++i) {
-        sorted_list.push_back(arr[i]);
+    for(int i = n - 1; i > 0; i--) {
+	std::swap(arr[0], arr[i]);
+	heapify(arr,i,0);
     }
-
-    //reverse(sorted_list.begin(), sorted_list.end()); //if wanting descending order then just uncomment
-
-
-    delete[] arr; // clean up
-    return sorted_list;
 }
