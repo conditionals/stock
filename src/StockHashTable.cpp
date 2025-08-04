@@ -9,10 +9,10 @@ StockHashTable::StockHashTable(size_t init_size): table_size(init_size), num_ele
 
 // https://www.geeksforgeeks.org/dsa/string-hashing-using-polynomial-rolling-hash-function/#
 // https://stackoverflow.com/a/299748
-size_t StockHashTable::hash_function(const std::string& symbol) {
+size_t StockHashTable::hash_function(const std::string &symbol) {
     size_t hash = 0;
-    for(char c : symbol) {
-	hash = hash * 31 + c;
+    for (char c: symbol) {
+        hash = hash * 31 + c;
     }
 
     return hash % table_size;
@@ -27,64 +27,60 @@ void StockHashTable::resize_table() {
 
     num_elements = 0;
 
-    for(const auto& node : old_table) {
-	if(!node.is_deleted && node.is_occupied) {
-	    insert(node.symbol, node.stock_data);
-	}
+    for (const auto &node: old_table) {
+        if (!node.is_deleted && node.is_occupied) {
+            insert(node.symbol, node.stock_data);
+        }
     }
 }
 
 
-
 // https://www.geeksforgeeks.org/dsa/implementing-hash-table-open-addressing-linear-probing-cpp/
-size_t StockHashTable::find_slot(const std::string& symbol) {
+size_t StockHashTable::find_slot(const std::string &symbol) {
     size_t idx = hash_function(symbol);
     size_t original_idx = idx;
 
-    while(table[idx].is_occupied) {
-	if(!table[idx].is_deleted && table[idx].symbol == symbol) {
-	    return idx;
-	}
-	idx += 1;
-	idx %= table_size;
+    while (table[idx].is_occupied) {
+        if (!table[idx].is_deleted && table[idx].symbol == symbol) {
+            return idx;
+        }
+        idx += 1;
+        idx %= table_size;
 
-	if(idx == original_idx) {
-	    break;
-	}
+        if (idx == original_idx) {
+            break;
+        }
     }
 
     return idx;
 }
 
 
-
-
-
-bool StockHashTable::insert(const std::string& symbol, StockInfo* stock) {
-    if(get_load_factor() > LOAD_FACTOR) {
-	resize_table();
-    } 
+bool StockHashTable::insert(const std::string &symbol, StockInfo *stock) {
+    if (get_load_factor() > LOAD_FACTOR) {
+        resize_table();
+    }
 
     size_t idx = find_slot(symbol);
 
-    if(!table[idx].is_occupied || table[idx].is_deleted) {
-	table[idx].symbol = symbol;
-	table[idx].stock_data = stock;
-	table[idx].is_deleted = false;
-	table[idx].is_occupied = true;
-	num_elements++;
-	return true;
+    if (!table[idx].is_occupied || table[idx].is_deleted) {
+        table[idx].symbol = symbol;
+        table[idx].stock_data = stock;
+        table[idx].is_deleted = false;
+        table[idx].is_occupied = true;
+        num_elements++;
+        return true;
     }
 
     return false;
 }
 
 
-StockInfo* StockHashTable::search(const std::string& symbol) {
+StockInfo *StockHashTable::search(const std::string &symbol) {
     size_t idx = find_slot(symbol);
 
-    if(table[idx].is_occupied && !table[idx].is_deleted && table[idx].symbol == symbol) {
-	return table[idx].stock_data;
+    if (table[idx].is_occupied && !table[idx].is_deleted && table[idx].symbol == symbol) {
+        return table[idx].stock_data;
     }
 
     return nullptr;
@@ -100,22 +96,30 @@ void StockHashTable::printStats() {
     std::cout << "Elements: " << num_elements << std::endl;
     std::cout << "Load Factor: " << std::fixed << std::setprecision(2) << get_load_factor() << std::endl;
 }
-std::vector<StockInfo*> StockHashTable::get_all() const {
-	std::vector<StockInfo*> results;
 
-	for (const auto& node : table) {
-		if (node.is_occupied && !node.is_deleted) {
-			results.push_back(node.stock_data);
-		}
-	}
+std::vector<StockInfo *> StockHashTable::get_all() const {
+    std::vector<StockInfo *> results;
 
-	return results;
+    for (const auto &node: table) {
+        if (node.is_occupied && !node.is_deleted) {
+            results.push_back(node.stock_data);
+        }
+    }
+
+    return results;
 }
 
+StockInfo** StockHashTable::get_all_array() const {
+    StockInfo** arr = new StockInfo* [num_elements];
+    int index = 0;
+    for (const auto &node: table) {
+        if (node.is_occupied && !node.is_deleted) {
+            arr[index++] = node.stock_data;
+        }
+    }
+    return arr;
+}
 
-
-
-
-
-
-
+int StockHashTable::size() const {
+    return num_elements;
+}

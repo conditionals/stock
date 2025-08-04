@@ -33,4 +33,7 @@ class StockHashTable {
 	void printStats();
 
 	std::vector<StockInfo *> get_all() const;
+	StockInfo** get_all_array() const;
+	int size() const;
+
 };

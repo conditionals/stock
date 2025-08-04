@@ -1,11 +1,11 @@
 #include "../include/StockAnalysisCLI.h"
+#include "../include/HeapSort.h"
 #include <ctime>
 #include <iomanip>
 #include <iostream>
 #include <random>
 #include <sstream>
 #include <unordered_set>
-#include <algorithm> // for heap sort functionality
 
 // will also need to add trees, perf profiling, etc.
 StockAnalysisCLI::StockAnalysisCLI() : hash_lookup(1000), rng(std::random_device{}()) {}
@@ -110,30 +110,6 @@ void StockAnalysisCLI::create_sample_data() {
     }
 }
 
-void StockAnalysisCLI::heap_sort_by_avg_return() {
-	std::vector<StockInfo*> all_stocks = hash_lookup.get_all();
-
-	auto cmp = [](StockInfo* a, StockInfo* b) {
-		return a->avg_annual_return < b->avg_annual_return; // max-heap: higher return comes first
-	};
-
-	// Build the heap
-	std::make_heap(all_stocks.begin(), all_stocks.end(), cmp);
-
-	// Sort it in-place
-	std::sort_heap(all_stocks.begin(), all_stocks.end(), cmp);
-
-	// Print or return sorted list
-	std::cout << std::fixed << std::setprecision(2);
-	for (const auto& stock : all_stocks) {
-		std::cout << stock->symbol << " | "
-				  << stock->company_name << " | "
-				  << "Avg Return: " << stock->avg_annual_return * 100 << "%\n";
-	}
-}
-
-
-
 void StockAnalysisCLI::run() {
     int choice;
     while(true) {
@@ -144,8 +120,8 @@ void StockAnalysisCLI::run() {
 	switch(choice){
 	    case 7:
 	    	break;
-		case 6:
-			heap_sort_by_avg_return();
+		// case 6:
+		// 	heap_sort_by_avg_return();  //calls the heap sort in ascending order
 		return;
 	    default:
 		std::cout << "Invalid chioce, please try again\n";
