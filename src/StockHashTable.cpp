@@ -94,7 +94,7 @@ void StockHashTable::printStats() {
     std::cout << "Hash Table Stats:" << std::endl;
     std::cout << "Size: " << table_size << std::endl;
     std::cout << "Elements: " << num_elements << std::endl;
-    std::cout << "Load Factor: " << std::fixed << std::setprecision(2) << get_load_factor() << std::endl;
+    std::cout << "Load Factor: " << std::fixed << std::setprecision(2) << get_load_factor() << std::endl << std::endl;
 }
 
 
