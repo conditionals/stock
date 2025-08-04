@@ -5,6 +5,7 @@
 #include <ctime>
 #include <iomanip>
 #include <iostream>
+#include <istream>
 #include <random>
 #include <sstream>
 #include <unordered_set>
@@ -199,16 +200,16 @@ void StockAnalysisCLI::run() {
 		break;
 	    }
 	    // search stock ticker
-	    // TODO: fix input loop
 	    case 3: {
 		std::cout << "Ticker Symbol (e.g. AAPL): ";
 		std::cin >> ticker;
 		std::cin.ignore();
+		std::cout << std::endl;
 
 		StockInfo* si = hash_lookup.search(ticker);
 		if(si == nullptr) {
 		    std::cout << REDCOLOR << 
-			"No Stock found for ticker: " << ticker << RESET << std::endl;
+			"No Stock found for ticker: " << ticker << "\n" << RESET << std::endl;
 		    break;
 		}
 
@@ -216,6 +217,7 @@ void StockAnalysisCLI::run() {
 		std::cout << "Avg. Annual Return: " << si->avg_annual_return << std::endl;
 		std::cout << "Total Return: " << si->total_return << std::endl;
 		std::cout << "Volatility: " << si->volatility << std::endl;
+		std::cout << std::endl;
 
 		break;
 	    }
