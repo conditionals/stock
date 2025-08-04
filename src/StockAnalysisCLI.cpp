@@ -10,7 +10,16 @@
 StockAnalysisCLI::StockAnalysisCLI() : hash_lookup(1000), rng(std::random_device{}()) {}
 
 void StockAnalysisCLI::display_menu() {
-    std::cout << "temp menu. replace\n\n1. load_stock_data\n2.analyze pf_prof\n7. quit\netc.\n\n";
+    std::cout << "Project 3: Stock Analysis\n";
+    std::cout << "1. Generate Stock Data\n";
+    std::cout << "2. Compare Algorithms\n";
+    std::cout << "3. Search Stock Ticker\n";
+    std::cout << "4. Display Best/Worst Performers\n";
+    std::cout << "5. Display Hash Table Stats\n";
+    std::cout << "6. Quit\n\n";
+
+    std::cout << "Choice: ";
+    
 }
 
 // use unordered set to ensure we dont generate same ticker more than once
@@ -109,20 +118,61 @@ void StockAnalysisCLI::create_sample_data() {
     }
 }
 
-
+// ANSI codes
+const std::string RESET = "\033[0m";
+const std::string RED = "\033[31m";
 
 void StockAnalysisCLI::run() {
     int choice;
+    std::string ticker;
     while(true) {
 	display_menu();
 	std::cin >> choice;
 	std::cin.ignore();
+	std::cout << "\n";
 
 	switch(choice){
-	    case 7:
+	    // generate stock data
+	    case 1:
+		create_sample_data();
+		break;
+	    // compare algorithms (delta t)
+	    case 2:
+		break;
+	    // search stock ticker
+	    // TODO: fix input loop
+	    case 3: {
+		std::cout << "Ticker Symbol (e.g. AAPL): ";
+		std::cin >> ticker;
+		std::cin.ignore();
+
+		StockInfo* si = hash_lookup.search(ticker);
+		if(si == nullptr) {
+		    std::cout << RED << 
+			"No Stock found for ticker: " << ticker << RESET << std::endl;
+		    break;
+		}
+
+		std::cout << si->company_name << std::endl;
+		std::cout << "Avg. Annual Return: " << si->avg_annual_return << std::endl;
+		std::cout << "Total Return: " << si->total_return << std::endl;
+		std::cout << "Volatility: " << si->volatility << std::endl;
+
+		break;
+	    }
+	    // display best/worst performers
+	    case 4:
+		break;
+
+	    // print hash table stats
+	    case 5:
+		hash_lookup.printStats();
+		break;
+
+	    case 6:
 		return;
 	    default:
-		std::cout << "Invalid chioce, please try again\n";
+		std::cout << RED << "Invalid selection, please try again.\n" << RESET << std::endl;
 	}
     }
 }
