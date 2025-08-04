@@ -10,6 +10,11 @@
 
 // will also need to add trees, perf profiling, etc.
 StockAnalysisCLI::StockAnalysisCLI() : hash_lookup(1000), rng(std::random_device{}()) {}
+StockAnalysisCLI::~StockAnalysisCLI() {
+    for(auto* stock : stock_database) {
+	delete stock;
+    }
+}
 
 void StockAnalysisCLI::display_menu() {
     std::cout << "Project 3: Stock Analysis\n";
@@ -62,9 +67,9 @@ void StockAnalysisCLI::create_sample_data() {
 
 
     for(const auto& symbol : symbols) {
-	StockInfo info;
-	info.symbol = symbol;
-	info.company_name = "Company " + info.symbol;
+	StockInfo* info = new StockInfo();
+	info->symbol = symbol;
+	info->company_name = "Company " + info->symbol;
 	
 	double prev_close = 100;
 
@@ -93,8 +98,8 @@ void StockAnalysisCLI::create_sample_data() {
 	    day.volume = volume_dist(rng);
 
 	    day.daily_return = (day.close - day.open) / day.open;
-	    info.total_return += day.daily_return;
-	    info.daily_data.push_back(day);
+	    info->total_return += day.daily_return;
+	    info->daily_data.push_back(day);
 	    prev_close = day.close;
 
 	    date.tm_mday += 1;
@@ -103,19 +108,19 @@ void StockAnalysisCLI::create_sample_data() {
 	    i++;
 	}
 
-	info.trading_days = static_cast<int>(info.daily_data.size());
-	info.avg_annual_return = (info.total_return / info.trading_days) * 252; // no weekends
+	info->trading_days = static_cast<int>(info->daily_data.size());
+	info->avg_annual_return = (info->total_return / info->trading_days) * 252; // no weekends
 	
 	// calc volatilitiy based upon standard dev of daily return
-	double mnDailyRet = info.avg_annual_return;
+	double mnDailyRet = info->avg_annual_return;
 	double ssd = 0.0;
-	for(const auto& day : info.daily_data) {
+	for(const auto& day : info->daily_data) {
 	    double diff = day.daily_return - mnDailyRet;
 	    ssd += diff * diff;
 	}
 
-	info.volatility = std::sqrt(ssd / info.trading_days);
-	hash_lookup.insert(info.symbol, &info);
+	info->volatility = std::sqrt(ssd / info->trading_days);
+	hash_lookup.insert(info->symbol, info);
 
     }
 }
@@ -139,8 +144,21 @@ void StockAnalysisCLI::run() {
 		create_sample_data();
 		break;
 	    // compare algorithms (delta t)
-	    case 2:
+	    case 2: {
+		std::vector<StockInfo*> hs = heap_sort_by_avg_return();
+		StockInfo* top = hs.at(hs.size()-1);
+		std::cout << "Top Performer: " << top->symbol << std::endl;
+		std::cout << "Avg. Annual Return: " << top->avg_annual_return << std::endl;
+		std::cout << "Volatility: " << top->volatility << "\n" << std::endl;
+
+
+		top = hs.at(0);
+		std::cout << "Bottom Performer: " << top->symbol << std::endl;
+		std::cout << "Avg. Annual Return: " << top->avg_annual_return << std::endl;
+		std::cout << "Volatility: " << top->volatility << "\n" << std::endl;
+
 		break;
+	    }
 	    // search stock ticker
 	    // TODO: fix input loop
 	    case 3: {

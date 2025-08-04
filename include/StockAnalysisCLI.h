@@ -6,7 +6,7 @@
 
 class StockAnalysisCLI {
     private:
-	std::vector<StockInfo> stock_database;
+	std::vector<StockInfo*> stock_database;
 	StockHashTable hash_lookup;
 
 	void display_menu();
@@ -20,6 +20,8 @@ class StockAnalysisCLI {
 
     public:
 	StockAnalysisCLI();
+	~StockAnalysisCLI();
+
 	void run();
 
 	std::mt19937 rng;
