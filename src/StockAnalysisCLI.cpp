@@ -6,6 +6,7 @@
 #include <random>
 #include <sstream>
 #include <unordered_set>
+#include <algorithm>
 
 // will also need to add trees, perf profiling, etc.
 StockAnalysisCLI::StockAnalysisCLI() : hash_lookup(1000), rng(std::random_device{}()) {}
