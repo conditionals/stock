@@ -11,6 +11,9 @@ class StockAnalysisCLI {
 
 	void display_menu();
 	void create_sample_data();
+
+	std::vector<StockInfo*> heap_sort_by_avg_return() const;
+
 	void analyze_performace();
 	void search_stock();
 	void display_performance();

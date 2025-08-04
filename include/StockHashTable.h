@@ -32,4 +32,7 @@ class StockHashTable {
 	double get_load_factor() const;
 	void printStats();
 
+	StockInfo** get_all_array() const;
+	int size() const;
+
 };

@@ -1,10 +1,12 @@
 #include "../include/StockAnalysisCLI.h"
+#include "../include/HeapSort.h"
 #include <ctime>
 #include <iomanip>
 #include <iostream>
 #include <random>
 #include <sstream>
 #include <unordered_set>
+#include <algorithm>
 
 // will also need to add trees, perf profiling, etc.
 StockAnalysisCLI::StockAnalysisCLI() : hash_lookup(1000), rng(std::random_device{}()) {}
@@ -170,6 +172,7 @@ void StockAnalysisCLI::run() {
 		break;
 
 	    case 6:
+
 		return;
 	    default:
 		std::cout << RED << "Invalid selection, please try again.\n" << RESET << std::endl;

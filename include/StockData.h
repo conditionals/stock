@@ -10,6 +10,7 @@ struct DailyStockData {
     double daily_return;
 
     DailyStockData() : high(0), low(0), open(0), close(0), volume(0), daily_return(0) {}
+
 };
 
 struct StockInfo {
