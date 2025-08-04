@@ -3,6 +3,7 @@
 //
 #pragma once
 #include "StockData.h"
+#include <iostream>
 #include <string>
 using namespace std;
 
@@ -18,8 +19,8 @@ private:
     Node *parent;
     // new nodes are always red
     Node(T value)
-        : data(value), color(RED), parent(nullptr), left(nullptr),
-          right(nullptr) {}
+        : data(value), color(RED), left(nullptr),
+          right(nullptr), parent(nullptr) {}
   };
 
   Node *root;
@@ -27,10 +28,61 @@ private:
 public:
   RedBlackTree() : root(nullptr) {}
 
+  void insert(const T &item) {
+    Node *newNode = new Node(item);
+    Node *inserted = insertNode(root, newNode);
+
+    if(inserted != newNode) {
+	return;
+    }
+    root = inserted;
+
+    fixInsert(newNode);
+  }
+
+  void printPrefixMatches(const std::string& prefix) {
+      int count = 0;
+      printPrefixHelper(root, prefix, count);
+  }
+
+  void clear() {
+      helpClear(root);
+      root = nullptr;
+  }
+
 private:
+    
+  void helpClear(Node* node) {
+	if(node == nullptr) return;
+	helpClear(node->left);
+	helpClear(node->right);
+
+	delete node->data;
+	delete node;
+  }
+
+  void printPrefixHelper(Node* node, const std::string& prefix, int& count) {
+      if(node == nullptr || count > 10) return;
+
+      printPrefixHelper(node->left, prefix, count);
+
+      if(count >= 10) return;
+
+      if(node->data->symbol.substr(0, prefix.size()) == prefix) {
+	  std::cout << node->data->symbol << " - Return: " << node->data->avg_annual_return
+	      << " - Volatility: " << node->data->volatility << std::endl;
+
+	  count++;
+      }
+
+      printPrefixHelper(node->right, prefix, count);
+  }
+
+
   // https://www.geeksforgeeks.org/dsa/introduction-to-red-black-tree/
   // moves right child to be the parent
   void rotateLeft(Node *&node) {
+    if(!node || !node->right) return; // stop dereferencing
     Node *child = node->right;
     node->right = child->left;
     // if subtree exists update the parent
@@ -53,6 +105,7 @@ private:
   // https://www.geeksforgeeks.org/dsa/introduction-to-red-black-tree/
   // moves left child to be the parent
   void rotateRight(Node *&node) {
+    if(!node || !node->left) return;
     Node *child = node->left;
     node->left = child->right;
 
@@ -129,25 +182,24 @@ private:
 
     // compares alphabetical order
     // goes left if new comes before current
-    if (newNode->data.symbol < root->data.symbol) {
+    if (newNode->data->symbol < root->data->symbol) {
       root->left = insertNode(root->left, newNode);
       // sets parent pointer
       root->left->parent = root;
     }
     // goes right if new comes before current
-    else if (newNode->data.symbol > root->data.symbol) {
+    else if (newNode->data->symbol > root->data->symbol) {
       root->right = insertNode(root->right, newNode);
       // sets parent pointer
       root->right->parent = root;
     }
     // if symbols are equal there is no insert
+    else {
+	delete newNode;
+	return root;
+	}
 
     return root;
-  }
-  void insert(const T &item) {
-    Node *newNode = new Node(item);
-    root = insertNode(root, newNode);
-    fixInsert(newNode);
   }
 
   Node *findNode(Node *root, const string &symbol) const {
@@ -155,11 +207,11 @@ private:
       return nullptr;
     }
     // checks if we are looking for this
-    if (symbol == root->data.symbol) {
+    if (symbol == root->data->symbol) {
       return root;
     }
     // goes left if the one we want comes before this one
-    if (symbol < root->data.symbol) {
+    if (symbol < root->data->symbol) {
       return findNode(root->left, symbol);
     }
     // goes right if the one we want comes after this one

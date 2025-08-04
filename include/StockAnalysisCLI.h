@@ -1,6 +1,7 @@
 #pragma once
 #include "StockData.h"
 #include "StockHashTable.h"
+#include "RedBlackTree.h"
 #include <random>
 
 
@@ -8,6 +9,7 @@ class StockAnalysisCLI {
     private:
 	std::vector<StockInfo*> stock_database;
 	StockHashTable hash_lookup;
+	RedBlackTree<StockInfo*> *rb_tree;
 
 	void display_menu();
 	void create_sample_data();

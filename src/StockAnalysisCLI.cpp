@@ -1,5 +1,5 @@
 #include "../include/StockAnalysisCLI.h"
-#include "../include/HeapSort.h"
+#include "../include/HeapSort.h" // this file is needed. do not remove
 #include <ctime>
 #include <iomanip>
 #include <iostream>
@@ -9,21 +9,26 @@
 #include <algorithm>
 
 // will also need to add trees, perf profiling, etc.
-StockAnalysisCLI::StockAnalysisCLI() : hash_lookup(1000), rng(std::random_device{}()) {}
+StockAnalysisCLI::StockAnalysisCLI() : hash_lookup(1000), rng(std::random_device{}()) {
+    rb_tree = new RedBlackTree<StockInfo*>();
+}
 StockAnalysisCLI::~StockAnalysisCLI() {
     for(auto* stock : stock_database) {
 	delete stock;
     }
+    rb_tree->clear();
+    delete rb_tree;
 }
 
 void StockAnalysisCLI::display_menu() {
     std::cout << "Project 3: Stock Analysis\n";
     std::cout << "1. Generate Stock Data\n";
     std::cout << "2. Compare Algorithms\n";
-    std::cout << "3. Search Stock Ticker\n";
+    std::cout << "3. Search Stock by Ticker\n";
     std::cout << "4. Display Best/Worst Performers\n";
-    std::cout << "5. Display Hash Table Stats\n";
-    std::cout << "6. Quit\n\n";
+    std::cout << "5. Search Tickers by Prefix\n";
+    std::cout << "6. Display Hash Table Stats\n";
+    std::cout << "7. Quit\n\n";
 
     std::cout << "Choice: ";
     
@@ -121,13 +126,14 @@ void StockAnalysisCLI::create_sample_data() {
 
 	info->volatility = std::sqrt(ssd / info->trading_days);
 	hash_lookup.insert(info->symbol, info);
+	rb_tree->insert(info);
 
     }
 }
 
 // ANSI codes
 const std::string RESET = "\033[0m";
-const std::string RED = "\033[31m";
+const std::string REDCOLOR = "\033[31m";
 
 void StockAnalysisCLI::run() {
     int choice;
@@ -168,7 +174,7 @@ void StockAnalysisCLI::run() {
 
 		StockInfo* si = hash_lookup.search(ticker);
 		if(si == nullptr) {
-		    std::cout << RED << 
+		    std::cout << REDCOLOR << 
 			"No Stock found for ticker: " << ticker << RESET << std::endl;
 		    break;
 		}
@@ -181,19 +187,58 @@ void StockAnalysisCLI::run() {
 		break;
 	    }
 	    // display best/worst performers
-	    case 4:
+	    case 4: {
+		std::vector<StockInfo*> hs = heap_sort_by_avg_return();
+		if(hs.empty()) {
+		    std::cout << REDCOLOR << "No stock data. Please generate some first.\n" << RESET << std::endl;
+		}
+
+		StockInfo* best = hs.back();
+		StockInfo* worst = hs.front();
+
+		std::cout << "Top Performer: " << best->symbol << std::endl;
+		std::cout << "Avg. Annual Return: " << best->avg_annual_return << std::endl;
+		std::cout << "Volatility: " << best->volatility << "\n" << std::endl;
+
+		std::cout << "Bottom Performer: " << worst->symbol << std::endl;
+		std::cout << "Avg. Annual Return: " << worst->avg_annual_return << std::endl;
+		std::cout << "Volatility: " << worst->volatility << "\n" << std::endl;
+
+		
 		break;
+	    }
+	    // search by prefix with RB tree
+	    case 5: {
+		if(rb_tree == nullptr) {
+		    std::cout << "No data. Must generate some first.\n";
+		    break;
+		}
+
+		std::string prefix;
+		std::cout << "Enter ticker prefix (1-4 chars): ";
+		std::cin >> prefix;
+
+		std::cout << "\nFirst 10 tickers starting with: " << "\"" << prefix << "\"" <<
+		    std::endl;
+
+		rb_tree->printPrefixMatches(prefix);
+
+		std::cout << std::endl;
+
+
+		break;
+	    }
+
 
 	    // print hash table stats
-	    case 5:
+	    case 6:
 		hash_lookup.printStats();
 		break;
 
-	    case 6:
-
+	    case 7:
 		return;
 	    default:
-		std::cout << RED << "Invalid selection, please try again.\n" << RESET << std::endl;
+		std::cout << REDCOLOR << "Invalid selection, please try again.\n" << RESET << std::endl;
 	}
     }
 }
